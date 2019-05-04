@@ -30,6 +30,13 @@ class Pt:
       self.right()
     elif dir == 'down':
       self.down()
+  def __repr__(self):
+      '''mostly for developers'''
+      return f"({self.x}, {self.y})"
+
+  def __str__(self):
+      '''mostly for users'''
+      return f"({self.x}, {self.y})"
 
 
 def dist(u1, u2):
@@ -39,13 +46,13 @@ def manhattan(pt):
   return abs(pt.x) + abs(pt.y)
 
 def directFromDist(pt):
-  if pt.x == -1 and pt.y == 0:
+  if pt.x <= -1:
     return 'left'
-  if pt.x == 1 and pt.y == 0:
+  elif pt.x >= 1:
     return 'right'
-  if pt.x == 0 and pt.y == -1 :
+  elif pt.y <= -1 :
     return 'up'
-  if pt.x == 0 and pt.y == 1 :
+  elif pt.y >= 1 :
     return 'down'
 
 def get_actions(state):
@@ -60,6 +67,9 @@ def get_actions(state):
   dirWalk = directions[rnd]
   dirAttack = 'left'
   foundFoe = False
+  needToWalk = False
+
+  # Slå direkt
   for foe in state.foes:
     if (foe.health == 0):
       continue
@@ -71,17 +81,32 @@ def get_actions(state):
       dirAttack = directFromDist(foeDist)
       foundFoe = True
       break
-      
-    
-  #for friend in state.units:
-  #  print('friend: ', friend.x, ' ', friend.y, ' (dist: ', dist(state.unit, friend))
+
+  # Gå ett steg, slå sen
+  if not foundFoe:
+    for foe in state.foes:
+      if (foe.health == 0):
+        continue
+      foeDist = dist(state.unit, foe)
+      manh = manhattan(foeDist)
+      print('foe: ', foe.x, ' ', foe.y, ' (dist: ', foeDist,   ' manh: ', manh, ')')
+      if (manh == 2):
+        print('found foe closeby')
+        dirWalk = directFromDist(foeDist)
+        foundFoe = True
+        currentPt = Pt(state.unit.x, state.unit.y)
+        currentPt.go(dirWalk)
+        foeDist = dist(currentPt, foe)
+        dirAttack = directFromDist(foeDist)
+        needToWalk = True
+        break
 
   moveAction = Action('move', dirWalk)
   attackAction =  Action('attack', dirAttack)
 
-
-
-  if (foundFoe):
+  if (needToWalk):
+    actions = [moveAction, attackAction]
+  elif (foundFoe):
     actions = [attackAction]
   else:
     actions = [moveAction]
