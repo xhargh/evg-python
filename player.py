@@ -36,6 +36,8 @@ def get_actions(state):
   dirAttack = 'left'
   foundFoe = False
   for foe in state.foes:
+    if (foe.health == 0):
+      continue
     foeDist = dist(state.unit, foe)
     manh = manhattan(foeDist)
     print('foe: ', foe.x, ' ', foe.y, ' (dist: ', foeDist,   ' manh: ', manh, ')')
