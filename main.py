@@ -88,7 +88,7 @@ def start_server(port):
 def register_player(port):
     'Register the player with the game server'
     info = player.get_player_info()
-    info["address"] = "http://10.0.75.1:" + str(port)
+    info["address"] = "http://10.10.119.1:" + str(port)
     http_client = HTTPClient()
     http_client.fetch(
         HTTPRequest(
