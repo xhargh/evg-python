@@ -7,20 +7,45 @@
 from game import Action, is_empty, Unit, GameState, build_distance_map
 from random import randint
 
+class Pt:
+  x = 0
+  y = 0
+  def __init__(self, x, y):
+    self.x = x
+    self.y = y
+  def right(self):
+    self.x = self.x + 1
+  def left(self):
+    self.x = self.x - 1
+  def up(self):
+    self.y = self.y - 1
+  def down(self):
+    self.y = self.y + 1
+  def go(self, dir):
+    if dir == 'up':
+      self.up()
+    elif dir == 'down':
+      self.down()
+    elif dir == 'right':
+      self.right()
+    elif dir == 'down':
+      self.down()
+
+
 def dist(u1, u2):
-  return [u2.x - u1.x, u2.y - u1.y]
+  return Pt(u2.x - u1.x, u2.y - u1.y)
 
-def manhattan(vec):
-  return abs(vec[0]) + abs(vec[1])
+def manhattan(pt):
+  return abs(pt.x) + abs(pt.y)
 
-def directFromDist(vec):
-  if vec[0] == -1 and vec[1] == 0:
+def directFromDist(pt):
+  if pt.x == -1 and pt.y == 0:
     return 'left'
-  if vec[0] == 1 and vec[1] == 0:
+  if pt.x == 1 and pt.y == 0:
     return 'right'
-  if vec[0] == 0 and vec[1] == -1 :
+  if pt.x == 0 and pt.y == -1 :
     return 'up'
-  if vec[0] == 0 and vec[1] == 1 :
+  if pt.x == 0 and pt.y == 1 :
     return 'down'
 
 def get_actions(state):
