@@ -69,12 +69,18 @@ def get_actions(state):
   foundFoe = False
   needToWalk = False
 
+  distToClosestFoe = 10000
+
   # Slå direkt
   for foe in state.foes:
     if (foe.health == 0):
       continue
     foeDist = dist(state.unit, foe)
     manh = manhattan(foeDist)
+    if distToClosestFoe > manh:
+      distToClosestFoe = manh
+      closestFoe = foe
+
     print('foe: ', foe.x, ' ', foe.y, ' (dist: ', foeDist,   ' manh: ', manh, ')')
     if (manh == 1):
       print('found foe')
@@ -84,27 +90,21 @@ def get_actions(state):
 
   # Gå ett steg, slå sen
   if not foundFoe:
-    for foe in state.foes:
-      if (foe.health == 0):
-        continue
-      foeDist = dist(state.unit, foe)
-      manh = manhattan(foeDist)
-      print('foe: ', foe.x, ' ', foe.y, ' (dist: ', foeDist,   ' manh: ', manh, ')')
-      if (manh == 2):
-        print('found foe closeby')
-        dirWalk = directFromDist(foeDist)
-        foundFoe = True
-        currentPt = Pt(state.unit.x, state.unit.y)
-        currentPt.go(dirWalk)
-        foeDist = dist(currentPt, foe)
-        dirAttack = directFromDist(foeDist)
-        needToWalk = True
-        break
+    print('go towards closeby')
+    foeDist = dist(state.unit, closestFoe)
+    dirWalk = directFromDist(foeDist)
+    if (manh == 1):
+      foundFoe = True
+    currentPt = Pt(state.unit.x, state.unit.y)
+    currentPt.go(dirWalk)
+    foeDist = dist(currentPt, foe)
+    dirAttack = directFromDist(foeDist)
+    needToWalk = True
 
   moveAction = Action('move', dirWalk)
   attackAction =  Action('attack', dirAttack)
 
-  if (needToWalk):
+  if (needToWalk and foundFoe):
     actions = [moveAction, attackAction]
   elif (foundFoe):
     actions = [attackAction]
