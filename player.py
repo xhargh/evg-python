@@ -94,41 +94,57 @@ def get_actions(state):
     foeDist = dist(state.unit, foe)
     manh = manhattan(foeDist)
 
-    print('foe: ', foe.x, ' ', foe.y, ' (dist: ', foeDist,   ' manh: ', manh, ')')
+    #print('foe: ', foe.x, ' ', foe.y, ' (dist: ', foeDist,   ' manh: ', manh, ')')
     if (manh == 1):
-      print('found foe')
+      #print('found foe')
       dirAttack = directFromDist(foeDist)
       foundFoe = True
       break
 
   # First non-dead enemy
   closestFoe = state.foes[0]
-  maxpower = 1000
+  minstrength = 1000
   for foe in state.foes:
     if (foe.health == 0):
       continue
-    if foe.power < maxpower:
-      maxpower = foe.power
+    if foe.power+foe.health < minstrength:
+      minstrength = foe.power+foe.health
       closestFoe = foe
+      print('minstrength = ', minstrength)
+
+  standStill = False
+  attackThenWalk = False
 
   # Gå ett steg, slå sen
   if not foundFoe:
     print('go towards closeby')
     foeDist = dist(state.unit, closestFoe)
     dirWalk = directFromDist(foeDist)
-    if (manh == 1):
-      foundFoe = True
+    #if (manh == 1):
+    #  foundFoe = True
+    #if (manh == 2):
+    #  standStill = True
     currentPt = Pt(state.unit.x, state.unit.y)
     currentPt.go(dirWalk)
     foeDist = dist(currentPt, foe)
     dirAttack = directFromDist(foeDist)
     needToWalk = True
+  else:
+    foeDist = dist(state.unit, closestFoe)
+    dirWalk = directFromDist(foeDist)
+    attackThenWalk = True
+
 
   moveAction = Action('move', dirWalk)
   attackAction =  Action('attack', dirAttack)
 
-  if (needToWalk and foundFoe):
+  if standStill:
+    print("don't walk")
+    actions = []
+  elif (needToWalk and foundFoe):
     actions = [moveAction, attackAction]
+  elif (attackThenWalk):
+    actions = [attackAction, moveAction]
   elif (foundFoe):
     actions = [attackAction]
   else:
