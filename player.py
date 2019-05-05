@@ -65,6 +65,7 @@ def directFromDist(pt):
     elif pt.x >= 1:
       return 'right'
 
+
 def get_actions(state):
   currentPosition = [state.unit.x, state.unit.y]
   
@@ -78,6 +79,7 @@ def get_actions(state):
   dirAttack = 'left'
   foundFoe = False
   needToWalk = False
+  manh = 1000
 
   # Idéer
   # - om man inte kan gå åt det hållet man vill, gå åt ett annat håll, ofta finns det ju två håll som är "rätt håll".
@@ -101,10 +103,13 @@ def get_actions(state):
 
   # First non-dead enemy
   closestFoe = state.foes[0]
+  maxpower = 1000
   for foe in state.foes:
     if (foe.health == 0):
       continue
-    closestFoe = foe
+    if foe.power < maxpower:
+      maxpower = foe.power
+      closestFoe = foe
 
   # Gå ett steg, slå sen
   if not foundFoe:
