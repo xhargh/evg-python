@@ -90,6 +90,12 @@ def get_actions(state):
       foundFoe = True
       break
 
+  # First non-dead enemy
+  for foe in state.foes:
+    if (foe.health == 0):
+      continue
+    closestFoe = foe
+
   # Gå ett steg, slå sen
   if foundClosestFoe and not foundFoe:
     print('go towards closeby')
