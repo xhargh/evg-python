@@ -46,14 +46,24 @@ def manhattan(pt):
   return abs(pt.x) + abs(pt.y)
 
 def directFromDist(pt):
-  if pt.x <= -1:
-    return 'left'
-  elif pt.x >= 1:
-    return 'right'
-  elif pt.y <= -1 :
-    return 'up'
-  elif pt.y >= 1 :
-    return 'down'
+  if randint(0, 3000) % 2 == 0:
+    if pt.x <= -1:
+      return 'left'
+    elif pt.x >= 1:
+      return 'right'
+    elif pt.y <= -1 :
+      return 'up'
+    elif pt.y >= 1 :
+      return 'down'
+  else:
+    if pt.y <= -1 :
+      return 'up'
+    elif pt.y >= 1 :
+      return 'down'
+    elif pt.x <= -1:
+      return 'left'
+    elif pt.x >= 1:
+      return 'right'
 
 def get_actions(state):
   currentPosition = [state.unit.x, state.unit.y]
@@ -69,8 +79,11 @@ def get_actions(state):
   foundFoe = False
   needToWalk = False
 
-  distToClosestFoe = 10000
-  foundClosestFoe = False
+  # Idéer
+  # - om man inte kan gå åt det hållet man vill, gå åt ett annat håll, ofta finns det ju två håll som är "rätt håll".
+  # - låt alla units gå mot en och samma fiende och mosa denna.
+  # -
+
 
   # Slå direkt
   for foe in state.foes:
@@ -78,10 +91,6 @@ def get_actions(state):
       continue
     foeDist = dist(state.unit, foe)
     manh = manhattan(foeDist)
-    if distToClosestFoe > manh:
-      distToClosestFoe = manh
-      closestFoe = foe
-      foundClosestFoe = True
 
     print('foe: ', foe.x, ' ', foe.y, ' (dist: ', foeDist,   ' manh: ', manh, ')')
     if (manh == 1):
@@ -91,13 +100,14 @@ def get_actions(state):
       break
 
   # First non-dead enemy
+  closestFoe = state.foes[0]
   for foe in state.foes:
     if (foe.health == 0):
       continue
     closestFoe = foe
 
   # Gå ett steg, slå sen
-  if foundClosestFoe and not foundFoe:
+  if not foundFoe:
     print('go towards closeby')
     foeDist = dist(state.unit, closestFoe)
     dirWalk = directFromDist(foeDist)
