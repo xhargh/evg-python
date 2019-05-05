@@ -45,6 +45,16 @@ def dist(u1, u2):
 def manhattan(pt):
   return abs(pt.x) + abs(pt.y)
 
+def reverse(dir):
+  if dir == 'left':
+    return 'right'
+  if dir == 'right':
+    return 'left'
+  if dir == 'up':
+    return 'down'
+  if dir == 'down':
+    return 'up'
+
 def directFromDist(pt):
   if randint(0, 3000) % 2 == 0:
     if pt.x <= -1:
@@ -101,7 +111,7 @@ def get_actions(state):
       foundFoe = True
       break
 
-  # First non-dead enemy
+  # First weakest non-dead enemy
   closestFoe = state.foes[0]
   minstrength = 1000
   for foe in state.foes:
@@ -134,6 +144,27 @@ def get_actions(state):
     dirWalk = directFromDist(foeDist)
     attackThenWalk = True
 
+  # Move our weakest unit south east
+  unitPowerList = []
+  thereIsSomeoneWeaker = False
+  for unit in state.units:
+    unitPowerList.append((unit, unit.power+unit.health))
+    #if (unit.health == 0):
+    #  continue
+    #if unit.power+unit.health > state.unit.power + state.unit.health:
+    #  thereIsSomeoneWeaker = True
+  
+  sortedUnitPowerList = sorted(unitPowerList, key=lambda x: x[1])  
+  weakestUnit = sortedUnitPowerList[0][0]
+  secondWeakestUnit = sortedUnitPowerList[1][0]
+
+  print('---', weakestUnit.id, state.unit.id)
+
+    
+  if state.unit.id == weakestUnit.id and weakestUnit.power+weakestUnit.health < secondWeakestUnit.power+secondWeakestUnit.health:
+    print('reverse')
+    dirWalk = reverse(dirWalk)
+
 
   moveAction = Action('move', dirWalk)
   attackAction =  Action('attack', dirAttack)
@@ -150,10 +181,12 @@ def get_actions(state):
   else:
     actions = [moveAction]
 
+
+
   return actions
 
 def get_player_info():
-  print('get_player_info asf' )
+  print('get_player_info' )
   return {
     "id": "Rust",
     "name": "Rust"
